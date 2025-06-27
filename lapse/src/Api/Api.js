@@ -57,7 +57,7 @@ LoginUser.interceptors.request.use(
     const token = getAuthToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-    }
+    } 
     return config;
   },
   (error) => Promise.reject(error)
