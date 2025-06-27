@@ -11,6 +11,7 @@ import { Toaster } from 'react-hot-toast';
 import Footer from './pages/components/Footer';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import TaskManager from './pages/Task';
 
 const App = () => {
   const location = useLocation();
@@ -29,6 +30,7 @@ const App = () => {
         <Route path="/formdata" element={<FormData />} />
         <Route path="/listsandkeys" element={<ListandKeys />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/tasks" element={<TaskManager />} />
       
       </Routes>
       {!hideNavAndFooter && <Footer />}

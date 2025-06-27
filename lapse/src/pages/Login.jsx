@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { Home, Mail, Lock, ArrowRight, LogIn, Eye, EyeOff } from 'lucide-react';
-import { LoginUserApi } from '../Api/Api'; // Import the API function
-import { jwtDecode } from 'jwt-decode'; // Import for token decoding
+import { loginUserApi } from '../Api/Api';
+import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -24,20 +24,20 @@ const Login = () => {
 
     try {
       const data = { email, password };
-      const response = await LoginUserApi(data);
+      const response = await loginUserApi(data);
 
       if (response?.data?.success) {
         setIsLoading(false);
-        localStorage.setItem('token', response.data.token); // Store the token
+        localStorage.setItem('token', response.data.token);
         toast.success('Login successful! Welcome back to Lapse!');
         const decode = jwtDecode(response.data.token);
         setTimeout(() => {
           if (decode.role === 'admin') {
             navigate('/dashboard');
           } else {
-            navigate('/'); // Default navigation as per simulation
+            navigate('/tasks'); // Direct to TaskManager after login
           }
-        }, 1000); // Delay to show toast
+        }, 1000);
       } else {
         setIsLoading(false);
         toast.error(response?.data?.message || 'Login failed');
@@ -45,7 +45,7 @@ const Login = () => {
     } catch (err) {
       setIsLoading(false);
       toast.error(err?.response?.data?.message || 'An error occurred during login');
-      console.error('Login error:', err); // Debug
+      console.error('Login error:', err);
     }
   };
 

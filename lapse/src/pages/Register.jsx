@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { Home, User, Mail, Lock, ArrowRight, CheckCircle, Eye, EyeOff } from 'lucide-react';
-import { createUserApi } from '../Api/Api'; // Import the API function
+import { createUserApi } from '../Api/Api';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -10,6 +10,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState(null); // For file upload
   const navigate = useNavigate();
 
   const submit = async (e) => {
@@ -23,15 +24,18 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const data = { username: name, email, password }; // Match backend expectation
+      const data = new FormData();
+      data.append('username', name);
+      data.append('email', email);
+      data.append('password', password);
+      if (image) data.append('image', image); // Append image if selected
+
       const response = await createUserApi(data);
 
       if (response?.data?.success) {
         setIsLoading(false);
         toast.success('Registration successful! Welcome to Lapse!');
-        setTimeout(() => {
-          navigate('/login');
-        }, 1000); // Delay to show toast
+        setTimeout(() => navigate('/login'), 1000);
       } else {
         setIsLoading(false);
         toast.error(response?.data?.message || 'Registration failed');
@@ -39,7 +43,7 @@ const Register = () => {
     } catch (err) {
       setIsLoading(false);
       toast.error(err?.response?.data?.message || 'An error occurred during registration');
-      console.error('Registration error:', err); // Debug
+      console.error('Registration error:', err);
     }
   };
 
@@ -139,6 +143,19 @@ const Register = () => {
               </div>
             </div>
 
+            {/* Image Upload */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Profile Image (Optional)
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImage(e.target.files[0])}
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-slate-50 hover:bg-white"
+              />
+            </div>
+
             {/* Submit Button */}
             <button
               type="submit"
@@ -194,6 +211,12 @@ const Register = () => {
                 <div className="flex items-center">
                   <span className="text-slate-500 w-16">Password:</span>
                   <span className="text-slate-700 font-medium">{'•'.repeat(password.length)}</span>
+                </div>
+              )}
+              {image && (
+                <div className="flex items-center">
+                  <span className="text-slate-500 w-16">Image:</span>
+                  <span className="text-slate-700 font-medium">{image.name}</span>
                 </div>
               )}
             </div>
